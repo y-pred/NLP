@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender System</title>
+</head>
+<body>
+    <h1>Movie Recommender System</h1>
+    
+    <form id="movieForm" action="/recommend" method="post">
+        <label for="movieSelect">Choose a movie:</label>
+        <select id="movieSelect" name="movie">
+            <!-- Populate dropdown options dynamically from dataframe -->
+            {% for movie in movies %}
+                <option value="{{ movie }}">{{ movie }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Recommend</button>
+    </form>
+
+    <div id="recommendations">
+        <!-- Recommendations will be displayed here -->
+    </div>
+
+    <script>
+        // JavaScript code for handling form submission
+        document.getElementById('movieForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            var form = event.target;
+            var formData = new FormData(form);
+
+            // Send a POST request to the server with selected movie
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display recommended movies
+                var recommendationsDiv = document.getElementById('recommendations');
+                recommendationsDiv.innerHTML = ''; // Clear previous recommendations
+
+                data.recommendations.forEach(movie => {
+                    var p = document.createElement('p');
+                    p.textContent = movie;
+                    recommendationsDiv.appendChild(p);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
