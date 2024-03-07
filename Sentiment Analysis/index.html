@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+</head>
+<body>
+    <h1>Sentiment analysis for a review</h1>
+    <form id="reviewForm">
+        <textarea id="reviewText" rows="4" cols="50" placeholder="Enter your review here"></textarea><br>
+        <button type="button" onclick="classify_Review()">Analyze Review</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function submitReview() {
+            var review = document.getElementById("reviewText").value;
+
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ review: review }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResult(data.sentiment);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displayResult(sentiment) {
+            var resultDiv = document.getElementById("result");
+            var resultText = "";
+            var emoji = "";
+
+            switch(sentiment) {
+                case "negative":
+                    resultText = "Negative";
+                    emoji = "😞";
+                    break;
+                case "somewhat negative":
+                    resultText = "Somewhat Negative";
+                    emoji = "😐";
+                    break;
+                case "neutral":
+                    resultText = "Neutral";
+                    emoji = "😐";
+                    break;
+                case "somewhat positive":
+                    resultText = "Somewhat Positive";
+                    emoji = "🙂";
+                    break;
+                case "positive":
+                    resultText = "Positive";
+                    emoji = "😊";
+                    break;
+                default:
+                    resultText = "Unknown";
+                    emoji = "❓";
+            }
+
+            resultDiv.innerHTML = "<p>Result: " + resultText + "</p><p>Emoji: " + emoji + "</p>";
+        }
+    </script>
+</body>
+</html>
